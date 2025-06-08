@@ -144,8 +144,6 @@ elif mode == "Toàn bộ thư mục":
             df = pd.DataFrame(results)
             st.success("🎉 Đã xử lý xong toàn bộ ảnh!")
             st.dataframe(df)
-            df.to_csv("eval_results.csv", sep="|", index=False)
-            st.info("📥 Kết quả đã lưu tại file eval_results.csv")
     else:
         st.info("Vui lòng upload file .zip chứa các ảnh để đánh giá.")
 
