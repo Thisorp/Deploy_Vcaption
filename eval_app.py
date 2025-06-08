@@ -60,13 +60,14 @@ st.markdown("""
 
 # ==================== MODEL CONFIG ====================
 MODEL_CONFIGS = {
-    "CaRNetvI": {"decoder": Decoder.RNetvI, "attention": None, "attention_dim": 0, "encoder_dim": 2086, "hidden_dim": 1024},
+    "CaRNetvI": {"decoder": Decoder.RNetvI, "attention": None, "attention_dim": 0, "encoder_dim": 1024, "hidden_dim": 1024},
     "CaRNetvH": {"decoder": Decoder.RNetvH, "attention": None, "attention_dim": 0, "encoder_dim": 1024, "hidden_dim": 1024},
     "CaRNetvHC": {"decoder": Decoder.RNetvHC, "attention": None, "attention_dim": 0, "encoder_dim": 1024, "hidden_dim": 1024},
     "CaRNetvHCAttention": {"decoder": Decoder.RNetvHCAttention, "attention": "SoftAttention", "attention_dim": 1024, "encoder_dim": 2048, "hidden_dim": 1024}
 }
 
-@st.cache(allow_output_mutation=True)
+# Thay thế st.cache bằng st.cache_resource (theo khuyến nghị mới của Streamlit)
+@st.cache_resource
 def load_model(model_key):
     cfg = MODEL_CONFIGS[model_key]
     encoder = FactoryEncoder(Encoder.CResNet50Attention if cfg["attention"] else Encoder.CResNet50)
