@@ -141,3 +141,4 @@ elif mode == "Toàn bộ thư mục":
 
 # ==================== WATERMARK ====================
 st.markdown("<div style='text-align:right; color: #888; font-size: 14px;'>Made by <b>Thisorp</b></div>", unsafe_allow_html=True)
+st.markdown("<div style='text-align:right; color: #888; font-size: 14px;'>Source dự án <b>https://github.com/Thisorp/Uneti_Vcaption</b></div>", unsafe_allow_html=True)
