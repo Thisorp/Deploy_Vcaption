@@ -26,7 +26,6 @@ from NeuralModels.FactoryModels import *
 from NeuralModels.Vocabulary import Vocabulary
 from VARIABLE import IMAGES_SUBDIRECTORY_NAME
 from NeuralModels.Attention.SoftAttention import SoftAttention
-from nltk.translate.bleu_score import sentence_bleu, SmoothingFunction
 
 # ==================== SIDEBAR OPTIONS ====================
 st.sidebar.header("⚙️ Tuỳ chọn")
@@ -89,11 +88,6 @@ def load_model(model_key):
     )
     net.load("./.saved")
     return net, vocab
-
-# ==================== BLEU ====================
-def compute_bleu(reference, candidate):
-    smoothie = SmoothingFunction().method4
-    return sentence_bleu([reference.split()], candidate.split(), smoothing_function=smoothie)
 
 net, vocab = load_model(model_key)
 st.markdown("---")
