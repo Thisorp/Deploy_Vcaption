@@ -60,7 +60,7 @@ st.markdown("""
 
 # ==================== MODEL CONFIG ====================
 MODEL_CONFIGS = {
-    "CaRNetvI": {"decoder": Decoder.RNetvI, "attention": None, "attention_dim": 0, "encoder_dim": 1024, "hidden_dim": 1024},
+    "CaRNetvI": {"decoder": Decoder.RNetvI, "attention": None, "attention_dim": 0, "encoder_dim": 2086, "hidden_dim": 1024},
     "CaRNetvH": {"decoder": Decoder.RNetvH, "attention": None, "attention_dim": 0, "encoder_dim": 1024, "hidden_dim": 1024},
     "CaRNetvHC": {"decoder": Decoder.RNetvHC, "attention": None, "attention_dim": 0, "encoder_dim": 1024, "hidden_dim": 1024},
     "CaRNetvHCAttention": {"decoder": Decoder.RNetvHCAttention, "attention": "SoftAttention", "attention_dim": 1024, "encoder_dim": 2048, "hidden_dim": 1024}
