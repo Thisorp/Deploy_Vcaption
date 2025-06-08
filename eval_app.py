@@ -130,17 +130,25 @@ elif mode == "Toàn bộ thư mục":
         os.remove("uploaded_images.zip")
         st.success("Đã upload và giải nén thư mục ảnh!")
         image_dir = temp_extract_dir
-        image_files = [f for f in os.listdir(image_dir) if f.lower().endswith(('jpg', 'jpeg', 'png'))]
-        if st.button("🚀 Bắt đầu đánh giá"):
+        # Duyệt đệ quy lấy tất cả file ảnh trong mọi thư mục con
+        image_files = []
+        for root, _, files in os.walk(image_dir):
+            for f in files:
+                if f.lower().endswith(('jpg', 'jpeg', 'png')):
+                    image_files.append(os.path.join(root, f))
+        if not image_files:
+            st.error("Không tìm thấy ảnh hợp lệ (.jpg, .jpeg, .png) trong file .zip!")
+        elif st.button("🚀 Bắt đầu đánh giá"):
             results = []
-            for file in image_files:
+            for file_path in image_files:
+                file_name = os.path.relpath(file_path, image_dir)
                 try:
-                    img = Image.open(os.path.join(image_dir, file)).convert("RGB")
+                    img = Image.open(file_path).convert("RGB")
                     tokens = net.eval_image_caption(img, vocab)
                     caption = " ".join([w for w in tokens if w not in ("<START>", "<END>")])
-                    results.append({"image_name": file, "caption": caption})
+                    results.append({"image_name": file_name, "caption": caption})
                 except Exception as e:
-                    results.append({"image_name": file, "caption": f"ERROR: {e}"})
+                    results.append({"image_name": file_name, "caption": f"ERROR: {e}"})
             df = pd.DataFrame(results)
             st.success("🎉 Đã xử lý xong toàn bộ ảnh!")
             st.dataframe(df)
