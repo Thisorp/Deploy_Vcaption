@@ -46,3 +46,5 @@ tqdm==4.62.3
 typing-extensions==4.0.1
 urllib3==1.26.8
 zipp==3.6.0
+gdown
+rarfile==4.0
