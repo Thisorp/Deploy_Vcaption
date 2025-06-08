@@ -1,21 +1,21 @@
 import streamlit as st
 import os
 import gdown
-import rarfile
+import zipfile
 from PIL import Image
 import pandas as pd
 
-MODEL_RAR_URL = "https://drive.google.com/uc?id=1vyLoiU8DAPlTs5bXbiU4toyrXBBa3EzF"
-RAR_PATH = "./model_saved.rar"
+MODEL_ZIP_URL = "https://drive.google.com/uc?id=1EAYJ4MjnpBfbvRZrb2pubYrRPQpmu-mq"
+ZIP_PATH = "./model_saved.zip"
 MODEL_DIR = "./.saved"
 
 def ensure_model():
     if not os.path.exists(MODEL_DIR):
         st.warning("Đang tải model từ Google Drive, vui lòng chờ...")
-        gdown.download(MODEL_RAR_URL, RAR_PATH, quiet=False)
-        with rarfile.RarFile(RAR_PATH) as rf:
-            rf.extractall(".")
-        os.remove(RAR_PATH)
+        gdown.download(MODEL_ZIP_URL, ZIP_PATH, quiet=False)
+        with zipfile.ZipFile(ZIP_PATH, 'r') as zip_ref:
+            zip_ref.extractall(".")
+        os.remove(ZIP_PATH)
         st.success("Tải và giải nén model thành công!")
 
 ensure_model()
