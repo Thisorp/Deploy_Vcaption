@@ -113,17 +113,26 @@ if mode == "Ảnh đơn":
                 """, unsafe_allow_html=True)
 
 elif mode == "Toàn bộ thư mục":
-    st.subheader("📂 Đánh giá nhiều ảnh trong thư mục")
-    dataset_folder = st.text_input("📁 Nhập đường dẫn thư mục chứa ảnh", "./dataset")
-
-    if st.button("🚀 Bắt đầu đánh giá"):
-        image_dir = os.path.join(dataset_folder, IMAGES_SUBDIRECTORY_NAME)
-        if not os.path.exists(image_dir):
-            st.error("❌ Không tìm thấy thư mục ảnh.")
-        else:
-            image_files = [f for f in os.listdir(image_dir) if f.lower().endswith(('jpg', 'jpeg', 'png'))]
+    st.subheader("📂 Đánh giá nhiều ảnh bằng cách upload thư mục")
+    uploaded_folder = st.file_uploader("Chọn folder ảnh (nén .zip)", type=["zip"])
+    temp_extract_dir = "./uploaded_images"
+    if uploaded_folder is not None:
+        # Xóa thư mục tạm nếu đã tồn tại
+        if os.path.exists(temp_extract_dir):
+            import shutil
+            shutil.rmtree(temp_extract_dir)
+        os.makedirs(temp_extract_dir, exist_ok=True)
+        # Lưu file zip và giải nén
+        with open("uploaded_images.zip", "wb") as f:
+            f.write(uploaded_folder.read())
+        with zipfile.ZipFile("uploaded_images.zip", 'r') as zip_ref:
+            zip_ref.extractall(temp_extract_dir)
+        os.remove("uploaded_images.zip")
+        st.success("Đã upload và giải nén thư mục ảnh!")
+        image_dir = temp_extract_dir
+        image_files = [f for f in os.listdir(image_dir) if f.lower().endswith(('jpg', 'jpeg', 'png'))]
+        if st.button("🚀 Bắt đầu đánh giá"):
             results = []
-
             for file in image_files:
                 try:
                     img = Image.open(os.path.join(image_dir, file)).convert("RGB")
@@ -132,12 +141,13 @@ elif mode == "Toàn bộ thư mục":
                     results.append({"image_name": file, "caption": caption})
                 except Exception as e:
                     results.append({"image_name": file, "caption": f"ERROR: {e}"})
-
             df = pd.DataFrame(results)
             st.success("🎉 Đã xử lý xong toàn bộ ảnh!")
             st.dataframe(df)
             df.to_csv("eval_results.csv", sep="|", index=False)
             st.info("📥 Kết quả đã lưu tại file eval_results.csv")
+    else:
+        st.info("Vui lòng upload file .zip chứa các ảnh để đánh giá.")
 
 # ==================== WATERMARK ====================
 st.markdown("<div style='text-align:right; color: #888; font-size: 14px;'>Made by <b>Thisorp</b></div>", unsafe_allow_html=True)
