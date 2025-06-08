@@ -1,16 +1,9 @@
 import streamlit as st
 import os
-from PIL import Image
-import pandas as pd
-import torch
-from NeuralModels.FactoryModels import *
-from NeuralModels.Vocabulary import Vocabulary
-from VARIABLE import IMAGES_SUBDIRECTORY_NAME
-from NeuralModels.Attention.SoftAttention import SoftAttention
-from nltk.translate.bleu_score import sentence_bleu, SmoothingFunction
-import os
 import gdown
 import rarfile
+from PIL import Image
+import pandas as pd
 
 MODEL_RAR_URL = "https://drive.google.com/uc?id=1vyLoiU8DAPlTs5bXbiU4toyrXBBa3EzF"
 RAR_PATH = "./model_saved.rar"
@@ -26,6 +19,15 @@ def ensure_model():
         st.success("Tải và giải nén model thành công!")
 
 ensure_model()
+
+# Import các thư viện liên quan torch SAU khi model đã sẵn sàng
+import torch
+from NeuralModels.FactoryModels import *
+from NeuralModels.Vocabulary import Vocabulary
+from VARIABLE import IMAGES_SUBDIRECTORY_NAME
+from NeuralModels.Attention.SoftAttention import SoftAttention
+from nltk.translate.bleu_score import sentence_bleu, SmoothingFunction
+
 # ==================== SIDEBAR OPTIONS ====================
 st.sidebar.header("⚙️ Tuỳ chọn")
 model_key = st.sidebar.selectbox("Chọn mô hình:", list({
