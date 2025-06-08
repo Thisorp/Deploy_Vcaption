@@ -8,7 +8,24 @@ from NeuralModels.Vocabulary import Vocabulary
 from VARIABLE import IMAGES_SUBDIRECTORY_NAME
 from NeuralModels.Attention.SoftAttention import SoftAttention
 from nltk.translate.bleu_score import sentence_bleu, SmoothingFunction
+import os
+import gdown
+import rarfile
 
+MODEL_RAR_URL = "https://drive.google.com/uc?id=1vyLoiU8DAPlTs5bXbiU4toyrXBBa3EzF"
+RAR_PATH = "./model_saved.rar"
+MODEL_DIR = "./.saved"
+
+def ensure_model():
+    if not os.path.exists(MODEL_DIR):
+        st.warning("Đang tải model từ Google Drive, vui lòng chờ...")
+        gdown.download(MODEL_RAR_URL, RAR_PATH, quiet=False)
+        with rarfile.RarFile(RAR_PATH) as rf:
+            rf.extractall(".")
+        os.remove(RAR_PATH)
+        st.success("Tải và giải nén model thành công!")
+
+ensure_model()
 # ==================== SIDEBAR OPTIONS ====================
 st.sidebar.header("⚙️ Tuỳ chọn")
 model_key = st.sidebar.selectbox("Chọn mô hình:", list({
@@ -124,3 +141,6 @@ elif mode == "Toàn bộ thư mục":
             st.dataframe(df)
             df.to_csv("eval_results.csv", sep="|", index=False)
             st.info("📥 Kết quả đã lưu tại file eval_results.csv")
+
+# ==================== WATERMARK ====================
+st.markdown("<div style='text-align:right; color: #888; font-size: 14px;'>Made by <b>Thisorp</b></div>", unsafe_allow_html=True)
