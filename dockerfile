@@ -12,7 +12,9 @@ COPY . /app
 
 # Cài đặt các thư viện Python
 RUN pip install --upgrade pip
-RUN pip install -r requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
+# Cài đặt streamlit rõ ràng để tránh lỗi PATH
+RUN pip install --no-cache-dir streamlit
 
 # Mở port mặc định của Streamlit
 EXPOSE 8501
