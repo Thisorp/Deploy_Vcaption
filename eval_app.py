@@ -96,8 +96,13 @@ net, vocab = load_model(model_key)
 st.markdown("---")
 
 # ==================== METRICS ====================
-REQUEST_COUNT = Counter('caption_requests_total', 'Tổng số request caption')
-CAPTION_LATENCY = Histogram('caption_latency_seconds', 'Thời gian xử lý caption')
+@st.cache_resource
+def get_metrics():
+    REQUEST_COUNT = Counter('caption_requests_total', 'Tổng số request caption')
+    CAPTION_LATENCY = Histogram('caption_latency_seconds', 'Thời gian xử lý caption')
+    return REQUEST_COUNT, CAPTION_LATENCY
+
+REQUEST_COUNT, CAPTION_LATENCY = get_metrics()
 
 def start_metrics_server():
     # Prometheus sẽ scrape metrics tại http://localhost:8000/metrics
