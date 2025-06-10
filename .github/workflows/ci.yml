@@ -31,3 +31,18 @@ jobs:
       - name: Check Python syntax
         run: |
           python -m compileall .
+
+      - name: Build Docker image
+        run: docker build -t uneti-vcaption .
+
+      - name: Run Docker container (test)
+        run: |
+          docker run -d -p 8501:8501 --name test_app uneti-vcaption
+          sleep 20
+          docker logs test_app
+          docker stop test_app
+
+      - name: Scan Docker image for vulnerabilities
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: 'uneti-vcaption'

@@ -4,6 +4,8 @@ import gdown
 import zipfile
 from PIL import Image
 import pandas as pd
+import threading
+from prometheus_client import start_http_server, Counter, Histogram
 
 MODEL_ZIP_URL = "https://drive.google.com/uc?id=1wlOyOf--30DgjVQzWJR2Nv811sF7zvVe"
 ZIP_PATH = "./model_saved.zip"
@@ -93,6 +95,17 @@ def load_model(model_key):
 net, vocab = load_model(model_key)
 st.markdown("---")
 
+# ==================== METRICS ====================
+REQUEST_COUNT = Counter('caption_requests_total', 'Tổng số request caption')
+CAPTION_LATENCY = Histogram('caption_latency_seconds', 'Thời gian xử lý caption')
+
+def start_metrics_server():
+    # Prometheus sẽ scrape metrics tại http://localhost:8000/metrics
+    start_http_server(8000)
+
+# Chạy metrics server ở background
+threading.Thread(target=start_metrics_server, daemon=True).start()
+
 # ==================== MAIN UI ====================
 if mode == "Ảnh đơn":
     st.subheader("📥 Tải ảnh lên để sinh caption")
@@ -101,16 +114,18 @@ if mode == "Ảnh đơn":
         image = Image.open(uploaded_file).convert("RGB")
         st.image(image, caption="Ảnh đã chọn", use_column_width=True)
         if st.button("📌 Sinh caption"):
-            with st.spinner("⏳ Đang xử lý..."):
-                tokens = net.eval_image_caption(image, vocab)
-                caption = " ".join([w for w in tokens if w not in ("<START>", "<END>")])
+            with CAPTION_LATENCY.time():
+                REQUEST_COUNT.inc()
+                with st.spinner("⏳ Đang xử lý..."):
+                    tokens = net.eval_image_caption(image, vocab)
+                    caption = " ".join([w for w in tokens if w not in ("<START>", "<END>")])
 
-                st.markdown("""
-                <div style='background-color: #e8f5e9; padding: 20px; border-radius: 8px; margin-top: 20px;'>
-                    <h4 style='color: green; margin-bottom: 10px;'>✅ Caption:</h4>
-                    <p style='font-size: 20px; font-weight: bold; color: #1b5e20;'>""" + caption + """</p>
-                </div>
-                """, unsafe_allow_html=True)
+                    st.markdown("""
+                    <div style='background-color: #e8f5e9; padding: 20px; border-radius: 8px; margin-top: 20px;'>
+                        <h4 style='color: green; margin-bottom: 10px;'>✅ Caption:</h4>
+                        <p style='font-size: 20px; font-weight: bold; color: #1b5e20;'>""" + caption + """</p>
+                    </div>
+                    """, unsafe_allow_html=True)
 
 elif mode == "Toàn bộ thư mục":
     st.subheader("📂 Đánh giá nhiều ảnh bằng cách upload thư mục")
@@ -139,19 +154,21 @@ elif mode == "Toàn bộ thư mục":
         if not image_files:
             st.error("Không tìm thấy ảnh hợp lệ (.jpg, .jpeg, .png) trong file .zip!")
         elif st.button("🚀 Bắt đầu đánh giá"):
-            results = []
-            for file_path in image_files:
-                file_name = os.path.relpath(file_path, image_dir)
-                try:
-                    img = Image.open(file_path).convert("RGB")
-                    tokens = net.eval_image_caption(img, vocab)
-                    caption = " ".join([w for w in tokens if w not in ("<START>", "<END>")])
-                    results.append({"image_name": file_name, "caption": caption})
-                except Exception as e:
-                    results.append({"image_name": file_name, "caption": f"ERROR: {e}"})
-            df = pd.DataFrame(results)
-            st.success("🎉 Đã xử lý xong toàn bộ ảnh!")
-            st.dataframe(df)
+            with CAPTION_LATENCY.time():
+                REQUEST_COUNT.inc(len(image_files))
+                results = []
+                for file_path in image_files:
+                    file_name = os.path.relpath(file_path, image_dir)
+                    try:
+                        img = Image.open(file_path).convert("RGB")
+                        tokens = net.eval_image_caption(img, vocab)
+                        caption = " ".join([w for w in tokens if w not in ("<START>", "<END>")])
+                        results.append({"image_name": file_name, "caption": caption})
+                    except Exception as e:
+                        results.append({"image_name": file_name, "caption": f"ERROR: {e}"})
+                df = pd.DataFrame(results)
+                st.success("🎉 Đã xử lý xong toàn bộ ảnh!")
+                st.dataframe(df)
     else:
         st.info("Vui lòng upload file .zip chứa các ảnh để đánh giá.")
 
