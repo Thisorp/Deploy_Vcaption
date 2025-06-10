@@ -5,9 +5,7 @@ certifi==2021.10.8
 chardet==3.0.4
 charset-normalizer==2.0.10
 colorama==0.4.5
-contextvars==2.4
 cycler==0.11.0
-googletrans==4.0.0rc1
 h11==0.9.0
 h2==3.2.0
 hpack==3.0.0
@@ -19,11 +17,10 @@ idna==2.10
 immutables==0.19
 importlib-resources==5.4.0
 jsonschema<4.18
-kaggle==1.5.12
+kaggle==1.7.4
 kiwisolver==1.3.1
-matplotlib==3.3.4
-numpy<2
-pandas==1.1.5
+matplotlib==3.4.3
+# Đã cài pandas riêng trong Dockerfile, xóa dòng này để tránh lỗi build do thiếu numpy header
 Pillow==8.4.0
 pip==18.1
 prometheus_client==0.20.0
@@ -43,9 +40,9 @@ soupsieve==2.3.2.post1
 streamlit==1.18.0
 text-unidecode==1.3
 toml==0.10.2
-torch==1.7.1
-torch-metrics==1.1.7
-torchvision==0.8.2
+torch==1.8.1
+torchmetrics==0.11.4
+torchvision==0.9.1
 tqdm==4.62.3
 typing-extensions==4.0.1
 urllib3==1.26.8
