@@ -1,6 +1,6 @@
 # UNETI VCaption - Sinh chú thích ảnh tiếng Việt
 
-## 🚀 Demo ứng dụng
+## 🚀 Demo ứng dụng - nhánh này build local trên MácOS
 ## Link Source: https://github.com/Thisorp/Uneti_Vcaption
 Bạn có thể chạy demo ứng dụng sinh caption ảnh tiếng Việt bằng Streamlit:
 - **Chạy trên máy tính:**
